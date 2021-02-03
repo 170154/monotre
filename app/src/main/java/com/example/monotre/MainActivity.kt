@@ -1,7 +1,10 @@
 package com.example.monotre
 
 import android.Manifest
+import android.app.Activity
 import android.app.Dialog
+import android.bluetooth.BluetoothAdapter
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -26,7 +29,43 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
 
     companion object{
         const val PERMISSIONS_REQUEST_CODE = 1000
+        const val BLUETOOTH_REQUEST_CODE = 10
     }
+    private val bluetoothAdapter: BluetoothAdapter by lazy{
+        val adapter = BluetoothAdapter.getDefaultAdapter()
+        if(adapter == null){
+            showErrorToast(R.string.bluetooth_is_not_supported)
+            finish()
+        }
+        adapter
+    }
+
+    private fun requestBluetoothFeature(){
+        if(bluetoothAdapter.isEnabled)
+            return
+
+        val enableBluetoothIntent: Intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+        startActivityForResult(enableBluetoothIntent, BLUETOOTH_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when(requestCode){
+            BLUETOOTH_REQUEST_CODE -> {
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    showErrorToast(R.string.bluetooth_is_not_working)
+                    finish()
+                    return
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun showErrorToast(messageId: Int){
+        Toast.makeText(this, messageId, Toast.LENGTH_LONG)
+             .show()
+    }
+
     private lateinit var beaconManager: BeaconManager
     private var isScanning = false
     
@@ -37,39 +76,22 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_AppCompat_DayNight)
         setContentView(R.layout.activity_main)
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
             floatingActionButtonOnToast("登録したいデバイスを選択してください")
         }
-    
+
         beaconManager = BeaconManager.getInstanceForApplication(this)
         beaconManager.beaconParsers.add(BeaconParser().setBeaconLayout(BeaconUtil.IBEACON_FORMAT))
 
         checkPermission()
-        
-        Log.d("create", "deteruyo^")
-    
-//        textView1.text = "test"
+    }
+
         /**
          * ここから
          */
-    
-//        val listView: ListView = findViewById(R.id.listView1)
-//
-//        val listItems = mutableListOf<ListItem>()
-//        for(i in 0..10) {
-//            val bmp: Bitmap? = BitmapFactory
-//                    .decodeResource(resources, R.mipmap.key)
-//
-//            val item = ListItem(bmp, "Key", "000-000-00${i}", "1.0000")
-//            //test
-//            listItems.add(item)
-//        }
-//
-//        val adapter = ListAdapter(this, R.layout.list_item, listItems)
-//        listView.adapter = adapter
-    }
     
     private fun floatingActionButtonOnToast(str: String) {
         toastDisplay(str)
@@ -154,7 +176,7 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
     }
 
 
-    private fun externalStoragePath(): String {
+    fun externalStoragePath(): String {
         return Environment.getExternalStorageDirectory().absolutePath
     }
 
@@ -162,6 +184,7 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
     // Start Service.
     override fun onResume(){
         super.onResume()
+        requestBluetoothFeature()
         isScanning = true
     }
     
@@ -208,27 +231,20 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
                         .map { "UUID:" + it.id1 + " major:" + it.id2 + " minor:" + it.id3 + " RSSI:" + it.rssi + " Distance:" + it.distance + " txPower" + it.txPower }
                         .forEach { Log.d("iBeacon", it)}
                 Log.d("iBeacon", "beacon available")
-                //ListView設定
-//                val adapter = ArrayAdapter(
-//                        this,
-//                        android.R.layout.simple_list_item_1,
-//                        beaconDetailsMap.toList()
-//                )
-//
-//                listView1.adapter = adapter
     
                 /**
                  * ここから
                  */
-                val listView: ListView = findViewById(R.id.listView1)
-    
+//                val listView: ListView = findViewById(R.id.listView1)
                 val listItems = mutableListOf<ListItem>()
                 
                 val bmp: Bitmap? = BitmapFactory
                         .decodeResource(resources, R.mipmap.key)
-                
                 Log.d("distanceFirst", distanceFirst)
-                val item = ListItem(bmp, "$inputItemName", "$inputUUID", "$distanceFirst")
+
+
+                val item = ListItem.builder(resources)
+                        .build(bmp, inputItemName, distanceFirst)
                 //test
                 listItems.add(item)
                 
