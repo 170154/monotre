@@ -32,6 +32,9 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
         const val PERMISSIONS_REQUEST_CODE = 1000
         const val BLUETOOTH_REQUEST_CODE = 10
     }
+
+    private var selectItem: String = ""
+
     private val bluetoothAdapter: BluetoothAdapter by lazy{
         val adapter = BluetoothAdapter.getDefaultAdapter()
         if(adapter == null){
@@ -77,7 +80,7 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_AppCompat_DayNight)
+        setTheme(R.style.Theme_AppCompat_Light)
         setContentView(R.layout.activity_main)
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
@@ -149,15 +152,18 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
                 return
             }
 
+            val spinner = dialogView.findViewById(R.id.spinner) as Spinner
+            selectItem = spinner.selectedItem.toString()
+
             inputItemName = itemNameEt.text.toString()
             inputUUID     = uuidEt.text.toString()
             inputMajor    = majorEt.text.toString()
             inputMinor    = minorEt.text.toString()
         
             Log.d("normally", " itemName: $inputItemName UUID: $inputUUID " +
-                    "major: $inputMajor minor: $inputMinor")
-            
-//            nzn氏にpass
+                    "major: $inputMajor minor: $inputMinor, Spinner: $selectItem")
+
+//          nzn氏にpass
             beaconManager.bind(this)
         }
     
@@ -237,11 +243,18 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
                 /**
                  * ここから
                  */
-//                val listView: ListView = findViewById(R.id.listView1)
                 val listItems = mutableListOf<ListItem>()
-                
-                val bmp: Bitmap? = BitmapFactory
+                var bmp: Bitmap? = BitmapFactory
                         .decodeResource(resources, R.mipmap.key)
+
+                if(selectItem == "サイフ"){
+                    bmp = BitmapFactory
+                            .decodeResource(resources, R.mipmap.wallet)
+                }else if(selectItem == "定期券"){
+                    bmp = BitmapFactory
+                            .decodeResource(resources, R.mipmap.teiki)
+                }
+
                 Log.d("distanceFirst", distanceFirst)
 
 
