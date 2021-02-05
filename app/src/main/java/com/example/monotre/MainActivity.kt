@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.dialog_registration.*
 import kotlinx.android.synthetic.main.list_item.*
 import org.altbeacon.beacon.*
 import kotlin.math.roundToInt
@@ -73,7 +74,7 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
     private var inputUUID     : String = ""
     private var inputMajor    : String = ""
     private var inputMinor    : String = ""
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_AppCompat_DayNight)
@@ -87,6 +88,7 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
         beaconManager.beaconParsers.add(BeaconParser().setBeaconLayout(BeaconUtil.IBEACON_FORMAT))
 
         checkPermission()
+
     }
 
         /**
@@ -146,7 +148,7 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, SingleDialogFragment.N
                 Log.d("err", "itemNameDialogView is error")
                 return
             }
-        
+
             inputItemName = itemNameEt.text.toString()
             inputUUID     = uuidEt.text.toString()
             inputMajor    = majorEt.text.toString()

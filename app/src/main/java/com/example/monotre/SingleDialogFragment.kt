@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.Spinner
 import androidx.fragment.app.DialogFragment
 
 
@@ -45,6 +47,7 @@ class SingleDialogFragment: DialogFragment() {
                         dialog?.cancel()
                         this.listener.onDialogNegativeClick(this)
                     }
+
             
             val dialog = builder.create()
             
@@ -53,14 +56,13 @@ class SingleDialogFragment: DialogFragment() {
                     view: View, motionEvent: MotionEvent ->
                             checkDialog(dialog) // trueを返すとDialogの "Closeを" キャンセルする
                 }
-                
             }
-            
+
             return dialog
         } ?: throw IllegalStateException("Activity cannot be null")
         
     }
-    
+
     private fun checkDialog(target: Dialog?): Boolean {
         val dialog = target ?: return true
         val emptyEditText =

@@ -4,6 +4,13 @@
     <string name="ok">ok</string>
     <string name="cancel">cancel</string>
 
+    <string-array name="list">
+        <item>カギ</item>
+        <item>サイフ</item>
+        <item>ポーチ</item>
+        <item>定期券</item>
+    </string-array>
+
     <!-- トーストで表示する文字列の設定 -->
     <string name="bluetooth_is_not_supported">お使いの端末でBluetoothがサポートされていません</string>
     <string name="bluetooth_is_not_working">お使いの端末のBluetooth機能がオンになっていません</string>
